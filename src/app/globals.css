@@ -1,26 +1,183 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-ibm-plex-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-emerald: var(--emerald);
+  --color-amber: var(--amber);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Dark Fintech Design System ─────────────────────────────────────── */
+:root {
+  --radius: 0.75rem;
+  /* Surface scale */
+  --background:    oklch(0.10 0.005 240);   /* near-black blue-tinted */
+  --surface-1:     oklch(0.13 0.007 240);   /* card base */
+  --surface-2:     oklch(0.17 0.008 240);   /* elevated */
+  --surface-3:     oklch(0.22 0.009 240);   /* hover state */
+
+  --foreground:    oklch(0.96 0.004 240);
+  --muted-foreground: oklch(0.58 0.010 240);
+
+  --card:          var(--surface-1);
+  --card-foreground: var(--foreground);
+  --popover:       var(--surface-2);
+  --popover-foreground: var(--foreground);
+
+  /* Brand accent — electric cyan */
+  --primary:       oklch(0.78 0.18 195);
+  --primary-foreground: oklch(0.10 0.005 240);
+
+  --secondary:     var(--surface-2);
+  --secondary-foreground: var(--foreground);
+
+  --muted:         var(--surface-2);
+  --accent:        var(--surface-3);
+  --accent-foreground: var(--foreground);
+
+  --destructive:   oklch(0.65 0.21 25);
+  --border:        oklch(1 0 0 / 8%);
+  --input:         oklch(1 0 0 / 8%);
+  --ring:          oklch(0.78 0.18 195 / 60%);
+
+  /* Status colors */
+  --emerald:       oklch(0.72 0.17 155);
+  --amber:         oklch(0.78 0.17 75);
+
+  --sidebar:       var(--surface-1);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+/* Force dark everywhere — this is a dark-only app */
+.dark {
+  --background:    oklch(0.10 0.005 240);
+  --surface-1:     oklch(0.13 0.007 240);
+  --surface-2:     oklch(0.17 0.008 240);
+  --surface-3:     oklch(0.22 0.009 240);
+  --foreground:    oklch(0.96 0.004 240);
+  --muted-foreground: oklch(0.58 0.010 240);
+  --card:          var(--surface-1);
+  --card-foreground: var(--foreground);
+  --primary:       oklch(0.78 0.18 195);
+  --primary-foreground: oklch(0.10 0.005 240);
+  --secondary:     var(--surface-2);
+  --secondary-foreground: var(--foreground);
+  --muted:         var(--surface-2);
+  --accent:        var(--surface-3);
+  --accent-foreground: var(--foreground);
+  --destructive:   oklch(0.65 0.21 25);
+  --border:        oklch(1 0 0 / 8%);
+  --input:         oklch(1 0 0 / 8%);
+  --ring:          oklch(0.78 0.18 195 / 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    /* Force dark mode at the HTML level */
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Utility classes ─────────────────────────────────────────────────── */
+@layer utilities {
+  .surface-1 { background-color: var(--surface-1); }
+  .surface-2 { background-color: var(--surface-2); }
+  .surface-3 { background-color: var(--surface-3); }
+
+  .text-primary-accent { color: var(--primary); }
+  .text-success { color: var(--emerald); }
+  .text-warning { color: var(--amber); }
+
+  /* Glowing border for active/focused states */
+  .ring-primary-glow {
+    box-shadow: 0 0 0 1px oklch(0.78 0.18 195 / 30%),
+                0 0 16px oklch(0.78 0.18 195 / 15%);
+  }
+
+  /* Subtle grid background texture */
+  .bg-grid {
+    background-image:
+      linear-gradient(oklch(1 0 0 / 3%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 3%) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Pill badge sizes */
+  .status-active  { background: oklch(0.72 0.17 155 / 15%); color: var(--emerald); border: 1px solid oklch(0.72 0.17 155 / 30%); }
+  .status-paused  { background: oklch(0.78 0.17 75 / 15%);  color: var(--amber);   border: 1px solid oklch(0.78 0.17 75 / 30%); }
+  .status-broken  { background: oklch(0.65 0.21 25 / 15%);  color: var(--destructive); border: 1px solid oklch(0.65 0.21 25 / 30%); }
 }
+
+/* ── Animations ──────────────────────────────────────────────────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 oklch(0.78 0.18 195 / 40%); }
+  70%  { box-shadow: 0 0 0 8px oklch(0.78 0.18 195 / 0%); }
+  100% { box-shadow: 0 0 0 0 oklch(0.78 0.18 195 / 0%); }
+}
+
+.animate-slide-up  { animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in   { animation: fade-in 0.25s ease both; }
+.animate-pulse-ring { animation: pulse-ring 2s infinite; }
+
+/* Staggered children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 60ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 180ms; }
+.stagger > *:nth-child(5) { animation-delay: 240ms; }
+.stagger > *:nth-child(6) { animation-delay: 300ms; }

@@ -1,0 +1,33 @@
+{
+  "name": "Marketplace Helper",
+  "short_name": "WB Monitor",
+  "description": "Мониторинг цен на Wildberries с уведомлениями в Telegram",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0d12",
+  "theme_color": "#0a0d12",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "share_target": {
+    "action": "/dashboard",
+    "method": "GET",
+    "params": {
+      "url": "url"
+    }
+  },
+  "categories": ["shopping", "utilities"],
+  "lang": "ru"
+}
