@@ -22,6 +22,9 @@ ENV NEXT_PUBLIC_CASDOOR_ORGANIZATION=$NEXT_PUBLIC_CASDOOR_ORGANIZATION
 ENV NEXT_PUBLIC_CASDOOR_APP_NAME=$NEXT_PUBLIC_CASDOOR_APP_NAME
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
+# Больше памяти для Next.js build (часто падает на "Creating an optimized production build" в Docker)
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 RUN npm run build
 
 # ── Runtime Stage ─────────────────────────────────────────────────────────────
