@@ -22,10 +22,11 @@ ENV NEXT_PUBLIC_CASDOOR_ORGANIZATION=$NEXT_PUBLIC_CASDOOR_ORGANIZATION
 ENV NEXT_PUBLIC_CASDOOR_APP_NAME=$NEXT_PUBLIC_CASDOOR_APP_NAME
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-# Больше памяти для Next.js build (часто падает на "Creating an optimized production build" в Docker)
+# Больше памяти для Next.js build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-RUN npm run build
+# Next.js 16 по умолчанию использует Turbopack — в Docker часто зависает; принудительно Webpack
+RUN npx next build --webpack
 
 # ── Runtime Stage ─────────────────────────────────────────────────────────────
 FROM mirror.gcr.io/library/node:20-alpine AS runner
