@@ -3,3 +3,10 @@ node_modules
 .env*
 !.env.local.example
 *.log
+
+# Исключаем сгенерированные артефакты PWA из контекста сборки —
+# next-pwa перегенерирует их сам в процессе `next build`
+public/sw.js
+public/workbox-*.js
+public/sw.js.map
+public/workbox-*.js.map

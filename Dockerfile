@@ -4,12 +4,12 @@ FROM mirror.gcr.io/library/node:20-alpine AS builder
 
 WORKDIR /app
 
+# 1. Зависимости — отдельный слой для кэширования
 COPY package*.json ./
 RUN npm ci
 
-COPY . .
-
-# Build-time переменные (пробросить в Dokploy как build args)
+# 2. Build-time переменные объявляются ДО копирования исходников,
+#    чтобы изменение ARG инвалидировало только слои после COPY . .
 ARG NEXT_PUBLIC_CASDOOR_ENDPOINT
 ARG NEXT_PUBLIC_CASDOOR_CLIENT_ID
 ARG NEXT_PUBLIC_CASDOOR_ORGANIZATION
@@ -24,7 +24,11 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Next.js 16 по умолчанию Turbopack — в Docker стабильнее Webpack
+# 3. Исходники копируются после объявления ARG/ENV
+COPY . .
+
+# Next.js 16 по умолчанию Turbopack — в Docker используем Webpack
+# (next-pwa генерирует service worker через Workbox/Webpack)
 RUN npx next build --webpack
 
 # ── Runtime ─────────────────────────────────────────────────────────────────
@@ -36,17 +40,21 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Создаём непривилегированного пользователя ДО COPY
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001 -G nodejs
+
+# Копируем артефакты сборки с правильным владельцем сразу (--chown в COPY
+# эффективнее отдельного RUN chown — не создаёт лишний слой)
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 
 EXPOSE 3000
 
 # Healthcheck без wget/curl (их нет в node:alpine). 2xx/3xx = ok
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
   CMD ["node", "-e", "const port = process.env.PORT || 3000; const req = require('http').get('http://127.0.0.1:'+port+'/', r => { r.resume(); r.on('end', () => process.exit(r.statusCode >= 200 && r.statusCode < 400 ? 0 : 1)); }); req.on('error', () => process.exit(1)); req.setTimeout(8000, () => { req.destroy(); process.exit(1); });"]
-
-RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001 -G nodejs && chown -R nextjs:nodejs /app
-USER nextjs
 
 CMD ["node", "server.js"]
