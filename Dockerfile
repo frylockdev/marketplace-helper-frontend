@@ -45,10 +45,6 @@ COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-# Healthcheck через Node (в node:alpine нет wget/curl). 2xx/3xx = ok
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD ["node", "-e", "const port = process.env.PORT || 3000; const req = require('http').get('http://127.0.0.1:'+port+'/', r => { r.resume(); r.on('end', () => process.exit(r.statusCode >= 200 && r.statusCode < 400 ? 0 : 1)); }); req.on('error', () => process.exit(1)); req.setTimeout(8000, () => { req.destroy(); process.exit(1); });"]
-
 # Запуск от непривилегированного пользователя
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001 -G nodejs && chown -R nextjs:nodejs /app
 USER nextjs
